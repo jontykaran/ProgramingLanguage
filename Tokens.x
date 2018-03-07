@@ -27,8 +27,9 @@ $white+       ;
   [\*]          { \s -> TokenTimes }
   [\;]          { \s -> TokenEOS }
   [\^]          { \s -> TokenAnd }
-  [\&&]          { \s -> TokenAnd }
-  [\|]          { \s -> TokenOR }
+  [\&&]         { \s -> TokenAnd }
+  [\|]        { \s -> TokenOR }
+  [\,]        { \s -> TokenComma}
   \/          { \s -> TokenDiv }
   \(          { \s -> TokenLParen }
   \)          { \s -> TokenRParen }
@@ -56,6 +57,7 @@ data Token =
   TokenDiv         |
   TokenStartComm   |
   TokenEndComm     |
+  TokenComma       |
   TokenEOS         |
   TokenLParen      |
   TokenRParen       
