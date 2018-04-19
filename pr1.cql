@@ -1,0 +1,1 @@
+choose A.1,B.1,A.2,B.2 from A and B;

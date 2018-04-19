@@ -1,0 +1,1 @@
+choose R.1,R.4 from R and R and R suchThat R.2 = R.3;

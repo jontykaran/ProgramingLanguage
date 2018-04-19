@@ -1,0 +1,1 @@
+choose A.1,B.2 from A and B suchThat A.2 = B.1 aswell orderBy A.1;
