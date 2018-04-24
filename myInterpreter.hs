@@ -13,6 +13,7 @@ crossProd xs ys = intermcross [ (x, y)| x <- xs  , y <- ys ]
                       intermcross (x:xs) = (fst x ++ snd x ): intermcross xs
  
 -- PARSE TABLE / READ CSV FILE  
+
 inc :: String -> [[String]]
 inc xs = [splitBy ',' a | a<- (splitBy '\n' xs)]
 --split in lines and comma 
@@ -120,18 +121,70 @@ redrem [] =[]
 redrem [x] = [x]
 redrem (x:y:ys) | x==y = redrem (y:ys)
                 | x/=y = x: redrem (y:ys)
+				
+getVa :: Query -> IO()
+getVa q = do {
+            ;let tab1 = file q!!0 ++".csv"
+                 tab2 = if(length(file q) == 1) then (tab1) else ( file q!!1 ++".csv")
+                 tab3 = if(length(file q) == 2) then (tab2) else (file q!!2 ++ ".csv")
+                 tab4 = if(length(file q) == 3) then (tab2) else (file q!!3 ++ ".csv")
+                 tab5 = if(length(file q) == 4) then (tab2) else (file q!!4 ++ ".csv")
+            ;read1 <- readFile tab1
+            ;read2 <- readFile tab2
+			;read3 <- readFile tab3
+			;read4 <- readFile tab4
+			;read5 <- readFile tab5
+            ;let tabA = inc read1
+                 tabB = inc read2
+                 tabC = inc read3
+                 tabD = inc read4
+                 tabE = inc read5
+			; let sTab = if (length (file q) == 1) 
+			               then (tabA)
+						   else if (length (file q) == 2)
+                                then (crossProd tabA tabB)	
+                                else if (length (file q) ==3 )
+                                     then (crossProd (crossProd tabA tabB) tabC) 	
+                                     else if (length (file q) == 4) 
+                                           then (crossProd (crossProd (crossProd tabA tabB) tabC) tabD )	
+                                           else if (length (file q) == 5)
+                                                then (crossProd(crossProd (crossProd (crossProd TabA tabB) tabC) tabD) tabE)	
+                                                else ([[]])												
+			; let tOrder = (order (sTab) (orderByAttr q) q (funcSize tabA ))
+                  tEquality = equate (equalityattr q) (sTab) q (funcSize tabA )
+                  tEquOrder = equate (equalityattr q) (tOrder) q (funcSize tabA )
+                  finalOut |(choosequery q)== 1 = convert(select (attr q) (convert(sTab)) q (funcSize tabA ))        -- print with selection
+                           |(choosequery q)== 2 = convert(select (attr q) (convert(tEquality)) q (funcSize tabA ))   -- print with equality
+                           |(choosequery q)== 3 = convert(select (attr q) (convert(tOrder)) q (funcSize tabA ))      -- print with order
+                           |(choosequery q)== 4 = convert(select (attr q) (convert(tEquOrder)) q (funcSize tabA ))   -- print with order and equality
+            ;putStrLn (concat (intersperse "\n" (comma finalOut)) )
+			}
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 -- # FUNCTION TO RUN AND IMPLEMENT TO GET DESIRED TABLE AFTER PASSING THE QUERY 
 queryfun :: Query -> IO()
 queryfun q = do {
             ;let tab1 = file q!!0 ++".csv"
                  tab2 = if(length(file q) == 1) then (tab1) else ( file q!!1 ++".csv")
+                 tab3 = if(length(file q) == 2) then (tab2) else (file q!!2 ++ ".csv")
+                 tab4 = if(length(file q) == 3) then (tab2) else (file q!!3 ++ ".csv")
+                 tab5 = if(length(file q) == 4) then (tab2) else (file q!!4 ++ ".csv")
             ;read1 <- readFile tab1
             ;read2 <- readFile tab2
+			;read3 <- readFile tab3
+			;read4 <- readFile tab4
+			;read5 <- readFile tab5
             ;let tabA = inc read1
                  tabB = inc read2
-                 sTab = if(length(file q) == 1) then (tabA) else crossProd tabA tabB
-                 tOrder = (order (sTab) (orderByAttr q) q (funcSize tabA ))
+                 tabC = inc read3
+                 tabD = inc read4
+                 tabE = inc read5
+			;let ta = case (length(file q)) of 
+									   1 -> tabA ;
+									   2 -> crossProd tabA tabB ;
+									   3 -> crossProd (crossProd tabA tabB) tabC ;
+									   4 -> crossProd (crossProd (crossProd tabA tabB) tabC) tabD ;
+									   5 -> crossProd(crossProd (crossProd (crossProd TabA tabB) tabC) tabD) tabE ;
+            ;let tOrder = (order (sTab) (orderByAttr q) q (funcSize tabA ))
                  tEquality = equate (equalityattr q) (sTab) q (funcSize tabA )
                  tEquOrder = equate (equalityattr q) (tOrder) q (funcSize tabA )
                  finalOut |(choosequery q)== 1 = convert(select (attr q) (convert(sTab)) q (funcSize tabA ))        -- print with selection

@@ -1,1 +1,1 @@
-choose R.1,R.4 from R and R and R suchThat R.2 = R.3;
+choose R.1,R.4,R.5,R.6 from R and R and R suchThat R.2 = R.1 and R.2 = R.1;
